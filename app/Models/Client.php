@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Concerns\HasImageUrl;
+use Illuminate\Database\Eloquent\Model;
+
+class Client extends Model
+{
+    use HasImageUrl;
+
+    protected $fillable = ['name', 'image', 'sort_order', 'status'];
+
+    protected $casts = ['status' => 'boolean', 'sort_order' => 'integer'];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->fileUrl($this->image);
+    }
+}
