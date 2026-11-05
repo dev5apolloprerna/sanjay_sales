@@ -23,6 +23,9 @@
         ['admin.clients.index', 'Our Clients', 'clients', 'admin.clients.*'],
         ['admin.videos.index', 'Video Gallery', 'video', 'admin.videos.*'],
         ['admin.blogs.index', 'Blogs', 'blog', 'admin.blogs.*'],
+        ['admin.catalogues.index', 'Catalogues', 'file', 'admin.catalogues.*'],
+        ['Website'],
+        ['admin.inquiries.index', 'Inquiries', 'mail', 'admin.inquiries.*'],
         /*['Account'],
         ['admin.profile', 'My Profile', 'user', 'admin.profile*'],
         ['admin.password', 'Change Password', 'lock', 'admin.password*'],*/

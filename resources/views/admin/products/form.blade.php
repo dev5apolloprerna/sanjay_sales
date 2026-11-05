@@ -39,6 +39,15 @@
         <textarea name="description" hidden>{{ old('description', $item->description) }}</textarea>
     </div>
 
+    <x-textarea name="features" label="Key Features" :value="\App\Support\LineList::listText($item->features)" rows="5"
+        hint="One feature per line." placeholder="High speed &amp; precision cutting&#10;Heavy-duty welded structure" />
+    <x-textarea name="applications" label="Applications" :value="\App\Support\LineList::listText($item->applications)" rows="5"
+        hint="One application per line." placeholder="Metal fabrication&#10;Sheet metal industry" />
+    <x-textarea name="specifications" label="Technical Specifications" :value="\App\Support\LineList::specsText($item->specifications)" rows="7"
+        hint="One per line:  Group | Label | Value   (e.g.  General | Machine Type | CNC Plasma Cutter ). Without a group it goes under “General”." />
+    <x-textarea name="faqs" label="FAQ" :value="\App\Support\LineList::faqsText($item->faqs)" rows="6"
+        hint="One per line:  Question | Answer" />
+
     <div class="field full" data-multi-preview>
         <label>Product Images</label>
         <div class="drop"><input type="file" name="images[]" accept="image/*" multiple><x-icon name="upload" width="20" height="20" /><div>Click or drop images (multiple allowed, max 10)</div></div>

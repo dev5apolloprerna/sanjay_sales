@@ -9,9 +9,17 @@ class Product extends Model
 {
     use HasImageUrl;
 
-    protected $fillable = ['category_id', 'subcategory_id', 'name', 'slug', 'brand', 'price', 'short_description', 'description', 'featured', 'status'];
+    protected $fillable = ['category_id', 'subcategory_id', 'name', 'slug', 'brand', 'price', 'short_description', 'description',
+        'features', 'applications', 'specifications', 'faqs', 'featured', 'status'];
 
-    protected $casts = ['status' => 'boolean', 'featured' => 'boolean'];
+    protected $casts = [
+        'status' => 'boolean',
+        'featured' => 'boolean',
+        'features' => 'array',
+        'applications' => 'array',
+        'specifications' => 'array',
+        'faqs' => 'array',
+    ];
 
     public function category()
     {
