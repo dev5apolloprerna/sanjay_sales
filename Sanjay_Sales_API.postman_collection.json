@@ -1,0 +1,419 @@
+{
+  "info": {
+    "name": "Sanjay Sales Website API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "See API_DOCUMENTATION.md"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    }
+  ],
+  "item": [
+    {
+      "name": "Common",
+      "item": [
+        {
+          "name": "Settings (header/footer/contact)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Home page",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/home",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "home"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "All categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Category by slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/welding-machines",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "welding-machines"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Subcategory",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/welding-machines/mig-welding",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "welding-machines",
+                "mig-welding"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Subcategories by category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subcategories?category=welding-machines",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "subcategories"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "welding-machines"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Product list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products?category=welding-machines&subcategory=&q=&featured=&sort=latest&per_page=12&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "welding-machines"
+                },
+                {
+                  "key": "subcategory",
+                  "value": ""
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                },
+                {
+                  "key": "featured",
+                  "value": ""
+                },
+                {
+                  "key": "sort",
+                  "value": "latest"
+                },
+                {
+                  "key": "per_page",
+                  "value": "12"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Product detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/mig-welding-machine",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "mig-welding-machine"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Blog list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/blogs?page=1&per_page=6",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "blogs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "6"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Blog detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/blogs/blog-post-1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "blogs",
+                "blog-post-1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Media",
+      "item": [
+        {
+          "name": "Photo gallery",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gallery",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gallery"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Video gallery",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/videos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "videos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Clients",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/clients",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "clients"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Catalogues (download page)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/catalogues",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "catalogues"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inquiry",
+      "item": [
+        {
+          "name": "Submit inquiry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ramesh Patel\",\n  \"email\": \"ramesh@example.com\",\n  \"phone\": \"+91 98765 43210\",\n  \"subject\": \"Price of MIG welder\",\n  \"message\": \"Please share price and delivery time.\",\n  \"product_id\": 1,\n  \"website\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inquiries",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inquiries"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

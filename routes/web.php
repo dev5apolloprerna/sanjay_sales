@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\CatalogueController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SubcategoryController;
@@ -38,5 +40,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('clients', ClientController::class)->except('show');
         Route::resource('videos', VideoController::class)->except('show');
         Route::resource('blogs', BlogController::class)->except('show');
+        Route::resource('catalogues', CatalogueController::class)->except('show');
+        Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'destroy']);
     });
 });

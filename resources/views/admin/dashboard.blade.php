@@ -3,7 +3,7 @@
 @section('content')
 <div class="page-head"><h1>Welcome, {{ auth('admin')->user()->name }}</h1></div>
 <div class="stats">
-    @foreach([['categories','Categories','cat','admin.categories.index'],['subcategories','Subcategories','sub','admin.subcategories.index'],['products','Products','box','admin.products.index'],['gallery','Gallery Images','img','admin.gallery.index'],['clients','Clients','clients','admin.clients.index'],['videos','Videos','video','admin.videos.index'],['blogs','Blog Posts','blog','admin.blogs.index']] as [$k,$label,$icon,$route])
+    @foreach([['categories','Categories','cat','admin.categories.index'],['subcategories','Subcategories','sub','admin.subcategories.index'],['products','Products','box','admin.products.index'],['gallery','Gallery Images','img','admin.gallery.index'],['clients','Clients','clients','admin.clients.index'],['videos','Videos','video','admin.videos.index'],['blogs','Blog Posts','blog','admin.blogs.index'],['catalogues','Catalogues','file','admin.catalogues.index'],['inquiries','Inquiries','mail','admin.inquiries.index']] as [$k,$label,$icon,$route])
         <a href="{{ route($route) }}" class="card stat"><div class="ic"><x-icon :name="$icon" /></div><div><b>{{ $counts[$k] }}</b><small>{{ $label }}</small></div></a>
     @endforeach
 </div>
