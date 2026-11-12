@@ -25,6 +25,7 @@
         ['admin.blogs.index', 'Blogs', 'blog', 'admin.blogs.*'],
         ['admin.catalogues.index', 'Catalogues', 'file', 'admin.catalogues.*'],
         ['Website'],
+        ['admin.seo.index', 'SEO Settings', 'seo', 'admin.seo.*'],
         ['admin.inquiries.index', 'Inquiries', 'mail', 'admin.inquiries.*'],
         /*['Account'],
         ['admin.profile', 'My Profile', 'user', 'admin.profile*'],

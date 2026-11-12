@@ -6,34 +6,35 @@ use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SeoController;
 use App\Http\Controllers\Api\SettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
-| Public JSON API for the Next.js website (sanjay-sales-next.vercel.app).
-| Base URL: <your-domain>/api   – full request/response docs: API_DOCUMENTATION.md
+| Public JSON API – every endpoint is POST, all parameters go in the request body.
 | Only active / published records are returned.
 */
 
 Route::middleware('throttle:api-read')->group(function () {
-    Route::get('settings', SettingController::class);          // header, footer, contact info, menu
-    Route::get('home', HomeController::class);                 // homepage in one call
+    Route::post('settings', SettingController::class);
+    Route::post('seo', SeoController::class);                                         // body: page (+ slug / category)
+    Route::post('home', HomeController::class);
 
-    Route::get('categories', [CategoryController::class, 'index']);
-    Route::get('categories/{slug}', [CategoryController::class, 'show']);
-    Route::get('categories/{category}/{slug}', [CategoryController::class, 'subcategory']);
-    Route::get('subcategories', [CategoryController::class, 'subcategories']);
+    Route::post('categories', [CategoryController::class, 'index']);
+    Route::post('categories/detail', [CategoryController::class, 'show']);            // body: slug
+    Route::post('subcategories', [CategoryController::class, 'subcategories']);       // body: category (optional)
+    Route::post('subcategories/detail', [CategoryController::class, 'subcategory']);  // body: category, slug
 
-    Route::get('products', [ProductController::class, 'index']);
-    Route::get('products/{slug}', [ProductController::class, 'show']);
+    Route::post('products', [ProductController::class, 'index']);
+    Route::post('products/detail', [ProductController::class, 'show']);               // body: slug
 
-    Route::get('blogs', [BlogController::class, 'index']);
-    Route::get('blogs/{slug}', [BlogController::class, 'show']);
+    Route::post('blogs', [BlogController::class, 'index']);
+    Route::post('blogs/detail', [BlogController::class, 'show']);                     // body: slug
 
-    Route::get('gallery', [MediaController::class, 'gallery']);
-    Route::get('videos', [MediaController::class, 'videos']);
-    Route::get('clients', [MediaController::class, 'clients']);
-    Route::get('catalogues', [MediaController::class, 'catalogues']);
+    Route::post('gallery', [MediaController::class, 'gallery']);
+    Route::post('videos', [MediaController::class, 'videos']);
+    Route::post('clients', [MediaController::class, 'clients']);
+    Route::post('catalogues', [MediaController::class, 'catalogues']);
 });
 
 // Inquire Now form – 5 submissions per minute per IP

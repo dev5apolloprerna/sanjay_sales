@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class CategoryController extends ApiController
 {
-    /** GET /api/categories – all active categories with subcategories + product counts. */
+    /** POST /api/categories – all active categories with subcategories + product counts. */
     public function index()
     {
         $categories = Category::active()
@@ -21,9 +21,11 @@ class CategoryController extends ApiController
         return $this->ok(CategoryResource::collection($categories));
     }
 
-    /** GET /api/categories/{slug} – one category with its subcategories. Products: /api/products?category={slug} */
-    public function show(string $slug)
+    /** POST /api/categories/detail   body: { "slug": "welding-machines" } */
+    public function show(Request $request)
     {
+        $slug = $request->validate(['slug' => ['required', 'string', 'max:200']])['slug'];
+
         $category = Category::active()->where('slug', $slug)
             ->withCount(['products' => fn ($q) => $q->active()])
             ->with(['subcategories' => fn ($q) => $q->active()->withCount(['products' => fn ($p) => $p->active()])])
@@ -32,7 +34,7 @@ class CategoryController extends ApiController
         return $this->ok(new CategoryResource($category));
     }
 
-    /** GET /api/subcategories?category={slug|id} */
+    /** POST /api/subcategories   body: { "category": "welding-machines" }  (optional, slug or id) */
     public function subcategories(Request $request)
     {
         $items = Subcategory::active()->with('category:id,name,slug')
@@ -44,11 +46,16 @@ class CategoryController extends ApiController
         return $this->ok(SubcategoryResource::collection($items));
     }
 
-    /** GET /api/categories/{category}/{slug} – one subcategory. Products: /api/products?subcategory={slug} */
-    public function subcategory(string $category, string $slug)
+    /** POST /api/subcategories/detail   body: { "category": "welding-machines", "slug": "arc-welders" } */
+    public function subcategory(Request $request)
     {
-        $item = Subcategory::active()->where('slug', $slug)
-            ->whereHas('category', fn ($q) => $q->active()->where('slug', $category))
+        $v = $request->validate([
+            'category' => ['required', 'string', 'max:200'],
+            'slug' => ['required', 'string', 'max:200'],
+        ]);
+
+        $item = Subcategory::active()->where('slug', $v['slug'])
+            ->whereHas('category', fn ($q) => $q->active()->where('slug', $v['category']))
             ->with('category:id,name,slug')
             ->withCount(['products' => fn ($q) => $q->active()])
             ->firstOrFail();

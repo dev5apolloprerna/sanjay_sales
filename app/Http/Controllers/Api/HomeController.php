@@ -14,7 +14,7 @@ use App\Models\Product;
 class HomeController extends ApiController
 {
     /**
-     * GET /api/home
+     * POST /api/home   body: {}
      * Everything the homepage needs in one request.
      */
     public function __invoke()

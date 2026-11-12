@@ -83,6 +83,9 @@ class SubcategoryController extends Controller
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
         ], [
             'category_id.required' => 'Please select a category.',
             'slug.unique' => 'This category already has a subcategory with this name/slug.',

@@ -64,5 +64,7 @@
         @error('images')<div class="error">{{ $message }}</div>@enderror
         @error('images.*')<div class="error">{{ $message }}</div>@enderror
     </div>
+
+    <x-seo-fields :item="$item" />
 </x-form-page>
 @endsection
