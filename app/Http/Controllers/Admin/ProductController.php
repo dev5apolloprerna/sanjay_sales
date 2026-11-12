@@ -109,6 +109,9 @@ class ProductController extends Controller
             'faqs' => ['nullable', 'string', 'max:10000'],
             'images' => ['nullable', 'array', 'max:10'],
             'images.*' => ['image', 'max:5120'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
         ], ['category_id.required' => 'Please select a category.', 'subcategory_id.exists' => 'This subcategory does not belong to the selected category.', 'images.*.image' => 'Each file must be an image.'])
             + ['status' => $request->boolean('status'), 'featured' => $request->boolean('featured')];
 

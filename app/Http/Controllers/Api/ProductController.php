@@ -10,19 +10,17 @@ use Illuminate\Http\Request;
 class ProductController extends ApiController
 {
     /**
-     * GET /api/products
-     *   ?category=welding-machines   (slug or id)
-     *   &subcategory=mig-welders     (slug or id)
-     *   &featured=1
-     *   &q=esab                      (searches name, brand, short description)
-     *   &sort=latest|oldest|name_asc|name_desc
-     *   &per_page=12&page=1
+     * POST /api/products   (all body fields optional, no pagination – returns all matching products)
+     *   category     slug or id
+     *   subcategory  slug or id
+     *   featured     true|false
+     *   q            searches name, brand, short description
+     *   sort         latest|oldest|name_asc|name_desc
      */
     public function index(Request $request)
     {
         $request->validate([
             'sort' => ['nullable', 'in:latest,oldest,name_asc,name_desc'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
             'q' => ['nullable', 'string', 'max:100'],
         ]);
 
@@ -42,17 +40,17 @@ class ProductController extends ApiController
             default => $query->latest()->orderByDesc('id'),
         };
 
-        $products = $query->paginate($this->perPage($request))->withQueryString();
-
-        return $this->ok(ProductCardResource::collection($products));
+        return $this->ok(ProductCardResource::collection($query->get()));
     }
 
     /**
-     * GET /api/products/{slug}
+     * POST /api/products/detail   body: { "slug": "mig-350" }
      * Product + 4 related products (same subcategory first, then same category).
      */
-    public function show(string $slug)
+    public function show(Request $request)
     {
+        $slug = $request->validate(['slug' => ['required', 'string', 'max:220']])['slug'];
+
         $product = Product::active()->where('slug', $slug)
             ->with(['category:id,name,slug', 'subcategory:id,name,slug', 'images'])
             ->firstOrFail();

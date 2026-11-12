@@ -10,7 +10,8 @@ class Product extends Model
     use HasImageUrl;
 
     protected $fillable = ['category_id', 'subcategory_id', 'name', 'slug', 'brand', 'price', 'short_description', 'description',
-        'features', 'applications', 'specifications', 'faqs', 'featured', 'status'];
+        'features', 'applications', 'specifications', 'faqs', 'featured', 'status',
+        'meta_title', 'meta_description', 'meta_keywords'];
 
     protected $casts = [
         'status' => 'boolean',

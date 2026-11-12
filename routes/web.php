@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\VideoController;
 use Illuminate\Support\Facades\Route;
@@ -42,5 +43,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('blogs', BlogController::class)->except('show');
         Route::resource('catalogues', CatalogueController::class)->except('show');
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'destroy']);
+
+        // SEO settings for fixed pages (home, about, contact ...)
+        Route::resource('seo', SeoController::class)->only(['index', 'edit', 'update'])->parameters(['seo' => 'seo']);
     });
 });

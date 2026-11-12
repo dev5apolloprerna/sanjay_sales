@@ -73,6 +73,9 @@ class CategoryController extends Controller
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_keywords' => ['nullable', 'string', 'max:500'],
         ]) + ['status' => $request->boolean('status'), 'sort_order' => (int) $request->sort_order];
     }
 }

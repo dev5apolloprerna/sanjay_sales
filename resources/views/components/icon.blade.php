@@ -21,6 +21,7 @@ $paths = [
   'back' => ['M19 12H5','M12 19l-7-7 7-7'],
   'file' => ['M6 3h9l4 4v14H6z','M14 3v5h5','M12 11v6','M9 14l3 3 3-3'],
   'mail' => ['M3 5h18v14H3z','M3 7l9 6 9-6'],
+  'seo' => ['M11 4a7 7 0 100 14 7 7 0 000-14z','M21 21l-4.35-4.35','M8.5 11.5l2 2 3.5-4'],
 ][$name] ?? [];
 @endphp
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {{ $attributes }}>@foreach($paths as $d)<path d="{{ $d }}"/>@endforeach</svg>

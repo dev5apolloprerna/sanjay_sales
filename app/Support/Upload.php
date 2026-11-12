@@ -10,9 +10,12 @@ use RuntimeException;
  * Saves uploaded images directly into the website's uploads folder
  * (plain PHP file handling – Laravel's "storage" folder is NOT used).
  *
- * Folder = UPLOAD_PATH from .env, for example
- *     UPLOAD_PATH=/home1/getdemo/public_html/sanjay_sales/uploads
- * If UPLOAD_PATH is empty, the project's public/uploads folder is used.
+ * Folder = public_path('uploads')  (recommended – leave UPLOAD_PATH empty)
+ *   - local:  <project>/public/uploads
+ *   - live:   public_html/sanjay_sales/uploads (index.php calls usePublicPath(__DIR__))
+ * Or force a folder with UPLOAD_PATH in .env:
+ *     UPLOAD_PATH=/home1/getdemo/public_html/sanjay_sales/uploads   (absolute)
+ *     UPLOAD_PATH=../public_html/sanjay_sales/uploads               (relative to base_path)
  *
  * The database stores the path inside that folder, e.g. "products/abc.jpg",
  * and the image URL becomes  <site>/uploads/products/abc.jpg
@@ -22,12 +25,22 @@ class Upload
     /** Absolute path of the uploads folder. */
     public static function dir(): string
     {
-        $path = config('app.upload_path');
-        if (! $path) {
+        $path = trim((string) config('app.upload_path'));
+
+        // Default: <public folder>/uploads. On the live server index.php sets the
+        // public folder to public_html/sanjay_sales, so this is the right place.
+        if ($path === '') {
             return public_path('uploads');
         }
-        $isAbsolute = str_starts_with($path, '/') || preg_match('~^[A-Za-z]:[\\\\/]~', $path);
 
+        $isAbsolute = str_starts_with($path, '/') || preg_match('~^[A-Za-z]:[\\\\/]~', $path);
+        // forgive a missing leading "/" (e.g. "home1/getdemo/public_html/...")
+        if (! $isAbsolute && ! str_starts_with($path, '.') && is_dir(dirname('/'.$path))) {
+            $path = '/'.$path;
+            $isAbsolute = true;
+        }
+
+        // relative paths are relative to the Laravel project folder (base_path)
         return rtrim($isAbsolute ? $path : base_path($path), '/\\');
     }
 

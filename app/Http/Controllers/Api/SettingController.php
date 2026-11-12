@@ -7,7 +7,7 @@ use App\Models\Category;
 class SettingController extends ApiController
 {
     /**
-     * GET /api/settings
+     * POST /api/settings   body: {}
      * Header, footer, contact page and menu data in one call.
      */
     public function __invoke()

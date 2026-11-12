@@ -27,7 +27,7 @@
         <textarea name="content" hidden>{{ old('content', $item->content) }}</textarea>
         @error('content')<div class="error">{{ $message }}</div>@enderror
     </div>
-    <x-field name="meta_title" label="SEO Meta Title" :value="$item->meta_title" />
-    <x-field name="meta_description" label="SEO Meta Description" :value="$item->meta_description" />
+
+    <x-seo-fields :item="$item" />
 </x-form-page>
 @endsection

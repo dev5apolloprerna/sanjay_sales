@@ -9,7 +9,8 @@ class Subcategory extends Model
 {
     use HasImageUrl;
 
-    protected $fillable = ['category_id', 'name', 'slug', 'description', 'image', 'sort_order', 'status'];
+    protected $fillable = ['category_id', 'name', 'slug', 'description', 'image', 'sort_order', 'status',
+        'meta_title', 'meta_description', 'meta_keywords'];
 
     protected $casts = ['status' => 'boolean', 'sort_order' => 'integer'];
 
