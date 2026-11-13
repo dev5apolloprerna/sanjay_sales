@@ -11,22 +11,7 @@
     <x-upload name="image" label="Featured Image" :current="$item->image_url" wide />
     <x-textarea name="excerpt" label="Short Excerpt" :value="$item->excerpt" rows="2" />
 
-    <div class="field full">
-        <label>Content <span class="req">*</span></label>
-        <div class="rte" data-rte="content">
-            <div class="rte-bar">
-                <button type="button" data-cmd="bold" style="font-weight:800">B</button><button type="button" data-cmd="italic" style="font-style:italic">I</button>
-                <button type="button" data-cmd="underline" style="text-decoration:underline">U</button><button type="button" data-cmd="formatBlock:h2">H2</button>
-                <button type="button" data-cmd="formatBlock:h3">H3</button><button type="button" data-cmd="formatBlock:p">P</button>
-                <button type="button" data-cmd="insertUnorderedList">• List</button><button type="button" data-cmd="insertOrderedList">1. List</button>
-                <button type="button" data-cmd="formatBlock:blockquote">Quote</button>
-                <button type="button" data-cmd="createLink">Link</button><button type="button" data-cmd="removeFormat">Clear</button>
-            </div>
-            <div class="rte-area" contenteditable="true"></div>
-        </div>
-        <textarea name="content" hidden>{{ old('content', $item->content) }}</textarea>
-        @error('content')<div class="error">{{ $message }}</div>@enderror
-    </div>
+    <x-editor name="content" label="Content" :value="$item->content" required />
 
     <x-seo-fields :item="$item" />
 </x-form-page>

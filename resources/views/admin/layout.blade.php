@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') – Sanjay Sales Admin</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=2">
 </head>
 <body>
 @php
@@ -25,6 +25,7 @@
         ['admin.blogs.index', 'Blogs', 'blog', 'admin.blogs.*'],
         ['admin.catalogues.index', 'Catalogues', 'file', 'admin.catalogues.*'],
         ['Website'],
+        ['admin.home-stats.edit', 'Home Counters', 'stats', 'admin.home-stats.*'],
         ['admin.seo.index', 'SEO Settings', 'seo', 'admin.seo.*'],
         ['admin.inquiries.index', 'Inquiries', 'mail', 'admin.inquiries.*'],
         /*['Account'],
@@ -81,6 +82,7 @@
         <div class="modal-foot"><button class="btn ghost" type="button" data-close-modal>Cancel</button><button class="btn danger" type="button" id="confirm-yes">Delete</button></div>
     </div>
 </div>
-<script src="{{ asset('js/admin.js') }}?v=1"></script>
+@stack('scripts')
+<script src="{{ asset('js/admin.js') }}?v=2"></script>
 </body>
 </html>

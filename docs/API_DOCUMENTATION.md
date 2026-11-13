@@ -14,7 +14,19 @@ Response data: `name`, `tagline`, `contact{...,whatsapp_link}`, `social{}`, `men
 
 ## 2. POST /api/home
 Request: `{}`
-Response data: `hero_slides[]`, `about{}`, `stats[]`, `categories[]`, `featured_products[]` (product cards), `clients[]`, `latest_blogs[]` (blog cards)
+Response data: `hero_slides[]`, `about{}`, `stats_section{}`, `stats[]`, `categories[]`, `featured_products[]` (product cards), `clients[]`, `latest_blogs[]` (blog cards)
+
+"Numbers That Define Us" counters – editable in Admin › Website › Home Counters:
+```json
+"stats_section": { "title": "Numbers That Define Us", "subtitle": null },
+"stats": [
+  { "value": 40,   "suffix": "+", "label": "Years Experience" },
+  { "value": 500,  "suffix": "+", "label": "Products Supplied" },
+  { "value": 1000, "suffix": "+", "label": "Satisfied Clients" },
+  { "value": 25,   "suffix": "+", "label": "Trusted Brands" }
+]
+```
+`value` is a number (animate the count-up to it), then show `suffix` after it.
 
 ## 3. POST /api/categories
 Request: `{}`
@@ -49,7 +61,8 @@ Request (all optional):
 `sort`: latest | oldest | name_asc | name_desc
 ```json
 { "success": true, "message": "OK", "data": [
-  { "id": 5, "name": "MIG 350", "slug": "mig-350", "brand": "ESAB", "price": "₹12,500", "short_description": "...",
+  { "id": 5, "name": "MIG 350", "slug": "mig-350", "brand": "ESAB", "price": "₹12,500",
+    "short_description": "<p>Inverter <strong>MIG</strong> welder…</p>", "short_description_text": "Inverter MIG welder…",
     "image_url": "https://your-domain.com/uploads/products/x.jpg", "featured": true,
     "category": { "id": 1, "name": "Welding Machines", "slug": "welding-machines" },
     "subcategory": { "id": 3, "name": "Arc Welders", "slug": "arc-welders" } } ] }
@@ -59,14 +72,22 @@ Request (all optional):
 Request: `{ "slug": "mig-350" }`
 ```json
 { "success": true, "message": "OK", "data": {
-  "product": { "id": 5, "name": "MIG 350", "slug": "mig-350", "brand": "ESAB", "price": "₹12,500", "short_description": "...", "image_url": "...", "featured": true,
+  "product": { "id": 5, "name": "MIG 350", "slug": "mig-350", "brand": "ESAB", "price": "₹12,500",
+    "short_description": "<p>Inverter <strong>MIG</strong> welder…</p>", "short_description_text": "Inverter MIG welder…", "image_url": "...", "featured": true,
     "category": { "id": 1, "name": "...", "slug": "..." }, "subcategory": { "id": 3, "name": "...", "slug": "..." },
     "description": "<p>...</p>", "images": [ { "id": 9, "url": "..." } ],
-    "features": ["High speed"], "applications": ["Fabrication"],
-    "specifications": [ { "group": "General", "items": [ { "label": "Type", "value": "MIG" } ] } ],
-    "faqs": [ { "question": "Warranty?", "answer": "1 year" } ], "updated_at": "2024-10-28T10:00:00+05:30" },
+    "features": "<ul><li><strong>High speed</strong> cutting</li></ul>",
+    "applications": "<ul><li>Fabrication</li></ul>",
+    "specifications": "<figure class=\"table\"><table><tbody><tr><th>Type</th><td>MIG</td></tr></tbody></table></figure>",
+    "faqs": [ { "question": "Warranty?", "answer": "<p><strong>1 year</strong> on the machine.</p>" } ], "updated_at": "2024-10-28T10:00:00+05:30" },
   "related_products": [ { "id": 6, "name": "...", "slug": "...", "brand": "...", "price": null, "short_description": "...", "image_url": "...", "featured": false, "category": { "id": 1, "name": "...", "slug": "..." } } ] } }
 ```
+
+**Rich text (CKEditor) fields:** `short_description`, `description`, `features`, `applications`, `specifications` and each FAQ `answer`
+are **HTML strings** (bold, italic, links, lists, headings, tables). Render them as HTML (e.g. `v-html` / `dangerouslySetInnerHTML`);
+they are cleaned on the server (no scripts, styles or event attributes). Each is `null` when empty – hide that section.
+`faqs` is always an array (`[]` when the product has no FAQs). Use `short_description_text` where plain text is needed (cards, meta tags).
+Tables come wrapped in `<figure class="table">` – add a little CSS for borders/padding.
 
 ## 9. POST /api/blogs
 Request (optional): `{ "q": "welding" }`

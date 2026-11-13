@@ -10,6 +10,7 @@ use App\Models\Blog;
 use App\Models\Category;
 use App\Models\Client;
 use App\Models\Product;
+use App\Models\Setting;
 
 class HomeController extends ApiController
 {
@@ -19,6 +20,8 @@ class HomeController extends ApiController
      */
     public function __invoke()
     {
+        $stats = Setting::homeStats();
+
         return $this->ok([
             'hero_slides' => config('site.hero_slides'),
             'about' => config('site.about'),
@@ -30,7 +33,9 @@ class HomeController extends ApiController
                 Product::active()->where('featured', true)->with(['images', 'category:id,name,slug'])
                     ->latest()->take(8)->get()
             )->resolve(),
-            'stats' => config('site.stats'),
+            // "Numbers That Define Us" – editable in Admin › Home Counters
+            'stats_section' => ['title' => $stats['title'], 'subtitle' => $stats['subtitle']],
+            'stats' => $stats['items'],
             'clients' => ClientResource::collection(Client::active()->orderBy('sort_order')->latest()->get())->resolve(),
             'latest_blogs' => BlogCardResource::collection(
                 Blog::active()->orderByDesc('published_at')->latest()->take(3)->get()

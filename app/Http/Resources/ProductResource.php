@@ -15,10 +15,12 @@ class ProductResource extends ProductCardResource
                 'id' => $img->id,
                 'url' => $img->url,
             ])->values()),
-            'features' => $this->features ?? [],
-            'applications' => $this->applications ?? [],
-            'specifications' => $this->specifications ?? [],
-            'faqs' => $this->faqs ?? [],
+            // HTML from the admin's CKEditor fields (null when empty – hide that section)
+            'features' => $this->features,
+            'applications' => $this->applications,
+            'specifications' => $this->specifications,
+            // [{ "question": "...", "answer": "<p>HTML</p>" }] – empty array when there are no FAQs
+            'faqs' => array_values($this->faqs ?? []),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
