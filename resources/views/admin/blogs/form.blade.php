@@ -4,7 +4,8 @@
 <x-form-page :title="$item->exists ? 'Edit Blog' : 'Add Blog'" :editing="$item->exists" :back="route('admin.blogs.index')"
     :action="$item->exists ? route('admin.blogs.update', $item) : route('admin.blogs.store')">
     <x-field name="title" label="Blog Title" :value="$item->title" required full />
-    <x-field name="slug" label="Slug (URL)" :value="$item->slug" data-slug-from="title" />
+    @if($item->exists)<input type="hidden" name="slug" value="{{ $item->slug }}">@endif
+    @error('slug')<div class="field full"><div class="error">{{ $message }}</div></div>@enderror
     <x-field name="author" label="Author" :value="$item->author" />
     <x-field name="published_at" type="date" label="Publish Date" :value="$item->published_at?->format('Y-m-d')" />
     <x-switch name="status" label="Status" :checked="$item->status" on="Published" off="Draft" />

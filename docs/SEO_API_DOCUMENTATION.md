@@ -12,11 +12,9 @@ Headers: `Content-Type: application/json`, `Accept: application/json`
 | `home`        | –                                     | `{ "page": "home" }`                                      |
 | `about`       | –                                     | `{ "page": "about" }`                                     |
 | `contact`     | –                                     | `{ "page": "contact" }`                                   |
-| `products`    | – (products listing page)             | `{ "page": "products" }`                                  |
 | `blogs`       | – (blogs listing page)                | `{ "page": "blogs" }`                                     |
 | `gallery`     | –                                     | `{ "page": "gallery" }`                                   |
 | `videos`      | –                                     | `{ "page": "videos" }`                                    |
-| `clients`     | –                                     | `{ "page": "clients" }`                                   |
 | `download`    | – (catalogues page)                   | `{ "page": "download" }`                                  |
 | `category`    | `slug`                                | `{ "page": "category", "slug": "welding-machines" }`      |
 | `subcategory` | `category` (slug), `slug`             | `{ "page": "subcategory", "category": "welding-machines", "slug": "arc-welders" }` |
@@ -30,45 +28,48 @@ Headers: `Content-Type: application/json`, `Accept: application/json`
   "success": true,
   "message": "OK",
   "data": {
-    "page": "home",
+    "page": "blogs",
+    "page_name": "Blog",
     "site_name": "Sanjay Sales",
-    "meta_title": "Welding & Cutting Equipment | Sanjay Sales",
-    "meta_description": "Authorised dealer of welding machines, cutting equipment ...",
+    "meta_title": "Blog || Welding & Cutting Equipment",
     "meta_keywords": "welding machine, plasma cutter",
-    "canonical_url": "https://www.yoursite.com/",
-    "robots": "index, follow",
-    "og_title": "Welding & Cutting Equipment | Sanjay Sales",
-    "og_description": "Authorised dealer of welding machines ...",
-    "og_image": "https://your-domain.com/uploads/seo/abc.jpg",
-    "og_type": "website"
+    "meta_description": "Authorised dealer of welding machines, cutting equipment ...",
+    "head": "<link rel=\"canonical\" href=\"https://www.yoursite.com/blogs\">\n<meta property=\"og:type\" content=\"website\">",
+    "body": "<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id=GTM-XXXX\"></iframe></noscript>"
   }
 }
 ```
 
-`og_type` is `website` for fixed pages, `product` for products and `article` for blogs.
-Detail pages use the SEO fields saved on the record; when a field is empty it is generated automatically
-(title from the name, description from short description / excerpt / content, image from the record's image).
+Fields match **Admin › SEO Setup › Edit Page SEO**: Page Name, Meta Title, Meta Keyword, Meta Description, Head, Body.
+
+- `meta_description` is returned as plain text (the admin editor's formatting is stripped) so it can go straight into `<meta name="description">`.
+- `head` – raw HTML (canonical, OG tags, Google Analytics ...) to inject inside `<head>`.
+- `body` – raw HTML (e.g. GTM noscript) to inject at the start of `<body>`.
+- Detail pages (`category`, `subcategory`, `product`, `blog`) use the SEO fields saved on the record; empty
+  fields are generated automatically. `head` / `body` are always `null` for them.
+- `products` (product listing) and `clients` no longer have SEO and now return **422**.
 
 ## Errors
 - 422 – missing/invalid field: `{ "message": "The slug field is required when page is blog.", "errors": { "slug": ["..."] } }`
 - 404 – record not found or inactive.
 
-## Next.js usage (App Router `generateMetadata`)
+## Next.js usage (App Router)
 ```js
-export async function generateMetadata({ params }) {
+async function getSeo(body) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/seo`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ page: 'blog', slug: params.slug }),
+    body: JSON.stringify(body),
   }).then(r => r.json());
-  const s = res.data;
-  return {
-    title: s.meta_title,
-    description: s.meta_description,
-    keywords: s.meta_keywords,
-    robots: s.robots,
-    alternates: s.canonical_url ? { canonical: s.canonical_url } : undefined,
-    openGraph: { title: s.og_title, description: s.og_description, images: s.og_image ? [s.og_image] : [], type: s.og_type, siteName: s.site_name },
-  };
+  return res.data;
 }
+
+export async function generateMetadata() {
+  const s = await getSeo({ page: 'blogs' });
+  return { title: s.meta_title, description: s.meta_description, keywords: s.meta_keywords };
+}
+
+// head / body are raw HTML snippets – render them in the page/layout, e.g.
+// <head dangerouslySetInnerHTML={{ __html: s.head ?? '' }} />  (or parse into <Script>/<meta> tags)
+// <div dangerouslySetInnerHTML={{ __html: s.body ?? '' }} />   at the top of <body>
 ```

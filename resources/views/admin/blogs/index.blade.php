@@ -13,7 +13,7 @@
         <tr>
             <td class="muted">{{ $items->firstItem() + $loop->index }}</td>
             <td>@if($b->image_url)<img class="thumb" style="width:80px;height:52px" src="{{ $b->image_url }}" alt="">@else<div class="thumb" style="width:80px;height:52px"></div>@endif</td>
-            <td><b>{{ $b->title }}</b><br><small class="muted">/{{ $b->slug }}</small></td>
+            <td><b>{{ $b->title }}</b></td>
             <td>{{ $b->author ?: '—' }}</td>
             <td>{{ $b->published_at?->format('d M Y') }}</td>
             <td><x-status :on="$b->status" yes="Published" no="Draft" /></td>

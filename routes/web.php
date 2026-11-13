@@ -54,7 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('home-counters', [HomeStatController::class, 'edit'])->name('home-stats.edit');
         Route::put('home-counters', [HomeStatController::class, 'update'])->name('home-stats.update');
 
-        // SEO settings for fixed pages (home, about, contact ...)
+        // SEO Setup for fixed pages (home, about, contact ...)
         Route::resource('seo', SeoController::class)->only(['index', 'edit', 'update'])->parameters(['seo' => 'seo']);
     });
 });

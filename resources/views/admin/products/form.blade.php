@@ -4,7 +4,8 @@
 <x-form-page :title="$item->exists ? 'Edit Product' : 'Add Product'" :editing="$item->exists" :back="route('admin.products.index')"
     :action="$item->exists ? route('admin.products.update', $item) : route('admin.products.store')">
     <x-field name="name" label="Product Name" :value="$item->name" required />
-    <x-field name="slug" label="Slug (URL)" :value="$item->slug" data-slug-from="name" hint="Auto-generated from name" />
+    @if($item->exists)<input type="hidden" name="slug" value="{{ $item->slug }}">@endif
+    @error('slug')<div class="field full"><div class="error">{{ $message }}</div></div>@enderror
     <x-select name="category_id" label="Category" :options="$categories->pluck('name', 'id')" :value="$item->category_id" required />
     <div class="field">
         <label for="f_subcategory_id">Subcategory</label>

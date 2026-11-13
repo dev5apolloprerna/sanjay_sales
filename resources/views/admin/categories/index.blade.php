@@ -13,7 +13,7 @@
         <tr>
             <td class="muted">{{ $items->firstItem() + $loop->index }}</td>
             <td>@if($c->image_url)<img class="thumb" src="{{ $c->image_url }}" alt="">@else<div class="thumb"></div>@endif</td>
-            <td><b>{{ $c->name }}</b><br><small class="muted">/{{ $c->slug }}</small></td>
+            <td><b>{{ $c->name }}</b></td>
             <td><a href="{{ route('admin.subcategories.index', ['category' => $c->id]) }}" style="color:var(--accent)">{{ $c->subcategories_count }}</a></td>
             <td>{{ $c->products_count }}</td>
             <td>{{ $c->sort_order }}</td>

@@ -13,14 +13,18 @@ use Illuminate\Support\Str;
 /**
  * POST /api/seo – one common endpoint for all SEO data.
  *
- *   Fixed pages : { "page": "home" }   (home, about, contact, products, blogs, gallery, videos, clients, download)
+ *   Fixed pages : { "page": "home" }   (home, about, contact, blogs, gallery, videos, download)
  *   Blog        : { "page": "blog",        "slug": "welding-tips" }
  *   Product     : { "page": "product",     "slug": "mig-350" }
  *   Category    : { "page": "category",    "slug": "welding-machines" }
  *   Subcategory : { "page": "subcategory", "category": "welding-machines", "slug": "arc-welders" }
  *
- * Detail pages use the SEO fields saved on the record and fall back to
- * auto-generated values (name / description / image) when they are empty.
+ * Response (same shape for every page):
+ *   page, page_name, site_name, meta_title, meta_keywords, meta_description, head, body
+ *
+ * Fixed pages come from Admin > SEO Setup. Detail pages use the SEO fields saved on the
+ * record and fall back to auto-generated values when they are empty (head/body are null).
+ * "products" (product listing) and "clients" no longer have SEO.
  */
 class SeoController extends ApiController
 {
@@ -47,23 +51,20 @@ class SeoController extends ApiController
         return $this->ok($seo);
     }
 
-    // ---------- fixed pages (managed in Admin > SEO Settings) ----------
+    // ---------- fixed pages (managed in Admin > SEO Setup) ----------
 
     private function fixedPage(string $key): array
     {
         $row = SeoPage::where('page_key', $key)->first();
-        $label = SeoPage::PAGES[$key];
+        $name = $row?->page_name ?: SeoPage::PAGES[$key];
 
         return $this->format($key, [
-            'meta_title' => $row?->meta_title ?: $label.' | '.$this->site(),
-            'meta_description' => $row?->meta_description,
+            'page_name' => $name,
+            'meta_title' => $row?->meta_title ?: $name.' | '.$this->site(),
             'meta_keywords' => $row?->meta_keywords,
-            'canonical_url' => $row?->canonical_url,
-            'robots' => $row?->robots ?: 'index, follow',
-            'og_title' => $row?->og_title ?: $row?->meta_title,
-            'og_description' => $row?->og_description ?: $row?->meta_description,
-            'og_image' => $row?->og_image_url,
-            'og_type' => 'website',
+            'meta_description' => $this->plain($row?->meta_description, 500),
+            'head' => $row?->head,
+            'body' => $row?->body,
         ]);
     }
 
@@ -74,10 +75,10 @@ class SeoController extends ApiController
         $c = Category::active()->where('slug', $slug)->firstOrFail();
 
         return $this->format('category', [
+            'page_name' => $c->name,
             'meta_title' => $c->meta_title ?: $c->name.' | '.$this->site(),
-            'meta_description' => $c->meta_description ?: $this->plain($c->description),
             'meta_keywords' => $c->meta_keywords,
-            'og_image' => $c->image_url,
+            'meta_description' => $this->plain($c->meta_description, 500) ?: $this->plain($c->description),
         ]);
     }
 
@@ -89,23 +90,23 @@ class SeoController extends ApiController
             ->firstOrFail();
 
         return $this->format('subcategory', [
+            'page_name' => $s->name,
             'meta_title' => $s->meta_title ?: $s->name.' | '.$s->category->name.' | '.$this->site(),
-            'meta_description' => $s->meta_description ?: $this->plain($s->description),
             'meta_keywords' => $s->meta_keywords,
-            'og_image' => $s->image_url,
+            'meta_description' => $this->plain($s->meta_description, 500) ?: $this->plain($s->description),
         ]);
     }
 
     private function product(string $slug): array
     {
-        $p = Product::active()->where('slug', $slug)->with('images')->firstOrFail();
+        $p = Product::active()->where('slug', $slug)->firstOrFail();
 
         return $this->format('product', [
+            'page_name' => $p->name,
             'meta_title' => $p->meta_title ?: $p->name.' | '.$this->site(),
-            'meta_description' => $p->meta_description ?: ($this->plain($p->short_description) ?: $this->plain($p->description)),
             'meta_keywords' => $p->meta_keywords ?: $p->brand,
-            'og_image' => $p->main_image_url,
-            'og_type' => 'product',
+            'meta_description' => $this->plain($p->meta_description, 500)
+                ?: ($this->plain($p->short_description) ?: $this->plain($p->description)),
         ]);
     }
 
@@ -114,31 +115,28 @@ class SeoController extends ApiController
         $b = Blog::active()->where('slug', $slug)->firstOrFail();
 
         return $this->format('blog', [
+            'page_name' => $b->title,
             'meta_title' => $b->meta_title ?: $b->title.' | '.$this->site(),
-            'meta_description' => $b->meta_description ?: ($this->plain($b->excerpt) ?: $this->plain($b->content)),
             'meta_keywords' => $b->meta_keywords,
-            'og_image' => $b->image_url,
-            'og_type' => 'article',
+            'meta_description' => $this->plain($b->meta_description, 500)
+                ?: ($this->plain($b->excerpt) ?: $this->plain($b->content)),
         ]);
     }
 
     // ---------- helpers ----------
 
-    /** One response shape for every page. og_* default to the meta values. */
+    /** One response shape for every page (same fields as Admin > SEO Setup). */
     private function format(string $page, array $d): array
     {
         return [
             'page' => $page,
+            'page_name' => $d['page_name'] ?? null,
             'site_name' => $this->site(),
             'meta_title' => $d['meta_title'] ?? null,
-            'meta_description' => $d['meta_description'] ?? null,
             'meta_keywords' => $d['meta_keywords'] ?? null,
-            'canonical_url' => $d['canonical_url'] ?? null,
-            'robots' => $d['robots'] ?? 'index, follow',
-            'og_title' => $d['og_title'] ?? $d['meta_title'] ?? null,
-            'og_description' => $d['og_description'] ?? $d['meta_description'] ?? null,
-            'og_image' => $d['og_image'] ?? null,
-            'og_type' => $d['og_type'] ?? 'website',
+            'meta_description' => $d['meta_description'] ?? null,
+            'head' => $d['head'] ?? null,
+            'body' => $d['body'] ?? null,
         ];
     }
 
