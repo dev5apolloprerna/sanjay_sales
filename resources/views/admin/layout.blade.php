@@ -26,7 +26,7 @@
         ['admin.catalogues.index', 'Catalogues', 'file', 'admin.catalogues.*'],
         ['Website'],
         ['admin.home-stats.edit', 'Home Counters', 'stats', 'admin.home-stats.*'],
-        ['admin.seo.index', 'SEO Settings', 'seo', 'admin.seo.*'],
+        ['admin.seo.index', 'SEO Setup', 'seo', 'admin.seo.*'],
         ['admin.inquiries.index', 'Inquiries', 'mail', 'admin.inquiries.*'],
         /*['Account'],
         ['admin.profile', 'My Profile', 'user', 'admin.profile*'],
