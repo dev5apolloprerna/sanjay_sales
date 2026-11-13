@@ -124,6 +124,7 @@ Returns all homepage data in one call.
       { "id": 1, "name": "MIG Welding Machine", "slug": "mig-welding-machine", "brand": "ESAB", "price": null, "short_description": "Inverter based MIG welder…", "image_url": "https://…/uploads/products/mig.jpg", "featured": true,
         "category": { "id": 1, "name": "Welding Machines", "slug": "welding-machines" } }
     ],
+    "stats_section": { "title": "Numbers That Define Us", "subtitle": null },
     "stats": [
       { "value": 40, "suffix": "+", "label": "Years Experience" },
       { "value": 500, "suffix": "+", "label": "Products Supplied" },
@@ -240,21 +241,18 @@ Returns the full product for the detail page, plus 4 related products: same sub-
     "product": {
       "id": 5, "name": "CNC Plasma Cutting Machine", "slug": "cnc-plasma-cutting-machine",
       "brand": null, "price": null,
-      "short_description": "High-performance CNC plasma cutter for metal fabrication…",
+      "short_description": "<p>High-performance <strong>CNC plasma cutter</strong> for metal fabrication…</p>",
+      "short_description_text": "High-performance CNC plasma cutter for metal fabrication…",
       "image_url": "https://…/uploads/products/main.jpg",
       "featured": false,
       "category": { "id": 2, "name": "CNC Cutting Machines", "slug": "cnc-cutting-machines" },
       "subcategory": null,
       "description": "<p>HTML from the admin's rich-text editor…</p>",
       "images": [ { "id": 7, "url": "https://…/uploads/products/main.jpg" }, { "id": 8, "url": "https://…/uploads/products/2.jpg" } ],
-      "features": ["High speed & precision cutting", "Heavy-duty structure"],
-      "applications": ["Metal fabrication", "Sheet metal industry"],
-      "specifications": [
-        { "group": "General", "items": [ { "label": "Machine Type", "value": "CNC Plasma Cutting Machine" }, { "label": "Control System", "value": "CNC Controller" } ] },
-        { "group": "Cutting Capacity", "items": [ { "label": "Working Area", "value": "1500 x 3000 mm" } ] },
-        { "group": "Power & Drive", "items": [ { "label": "Power Requirement", "value": "415V, 3 Phase" } ] }
-      ],
-      "faqs": [ { "question": "Which materials can it cut?", "answer": "Mild steel, stainless steel and aluminium." } ],
+      "features": "<ul><li><strong>High speed</strong> &amp; precision cutting</li><li>Heavy-duty structure</li></ul>",
+      "applications": "<ul><li>Metal fabrication</li><li>Sheet metal industry</li></ul>",
+      "specifications": "<h4>General</h4><figure class=\"table\"><table><tbody><tr><th>Machine Type</th><td>CNC Plasma Cutting Machine</td></tr></tbody></table></figure>",
+      "faqs": [ { "question": "Which materials can it cut?", "answer": "<p>Mild steel, <em>stainless steel</em> and aluminium.</p>" } ],
       "updated_at": "2026-11-04T10:42:39+00:00"
     },
     "related_products": [
@@ -264,7 +262,7 @@ Returns the full product for the detail page, plus 4 related products: same sub-
   }
 }
 ```
-`features`, `applications`, `specifications` and `faqs` are always arrays, and are empty if not filled in. Hide a section when its array is empty.
+`short_description`, `description`, `features`, `applications`, `specifications` and each FAQ `answer` are HTML from the admin's CKEditor (render as HTML; `null` when empty – hide that section). `faqs` is always an array, `[]` when there are none. `short_description_text` is the plain-text version for cards / meta tags.
 
 **Response 404:** `{ "success": false, "message": "Record not found." }`
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
+use App\Support\Html;
 use App\Support\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -60,10 +61,8 @@ class BlogController extends Controller
     private function validated(Request $request, ?Blog $blog = null): array
     {
         $request->merge(['slug' => Str::slug($request->slug ?: $request->title)]);
-        // the editor leaves "<br>" behind when emptied
-        if (trim(strip_tags((string) $request->content, '<img>')) === '') {
-            $request->merge(['content' => null]);
-        }
+        // CKEditor HTML: strip anything unsafe, treat "<p>&nbsp;</p>" as empty
+        $request->merge(['content' => Html::clean($request->content)]);
 
         return $request->validate([
             'title' => ['required', 'string', 'max:250'],

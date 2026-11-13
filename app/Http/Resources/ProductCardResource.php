@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\Html;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,7 +17,8 @@ class ProductCardResource extends JsonResource
             'slug' => $this->slug,
             'brand' => $this->brand,
             'price' => $this->price,
-            'short_description' => $this->short_description,
+            'short_description' => $this->short_description,                         // HTML (CKEditor)
+            'short_description_text' => Html::text($this->short_description),        // plain text for cards / meta
             'image_url' => $this->whenLoaded('images', fn () => $this->images->first()?->url),
             'featured' => $this->featured,
             'category' => $this->whenLoaded('category', fn () => $this->category ? [

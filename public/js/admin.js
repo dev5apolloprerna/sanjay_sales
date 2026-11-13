@@ -76,20 +76,58 @@ document.addEventListener('DOMContentLoaded', () => {
   // existing product images: ticking the × marks them for removal
   $$('.pv label.rm input').forEach((cb) => cb.addEventListener('change', () => cb.closest('.pv').classList.toggle('removed', cb.checked)));
 
-  /* ---- simple rich text editor: <div data-rte="textareaName"> ---- */
-  $$('[data-rte]').forEach((wrap) => {
-    const ta = document.querySelector(`textarea[name="${wrap.dataset.rte}"]`), area = $('.rte-area', wrap);
-    area.innerHTML = ta.value;
-    const sync = () => { ta.value = area.innerHTML; };
-    area.addEventListener('input', sync);
-    $$('.rte-bar button', wrap).forEach((b) => b.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      const [cmd, val] = b.dataset.cmd.split(':');
-      if (cmd === 'createLink') { const u = prompt('Link URL'); if (!u) return; document.execCommand(cmd, false, u); }
-      else document.execCommand(cmd, false, val ? `<${val}>` : null);
-      area.focus(); sync();
-    }));
-    ta.form?.addEventListener('submit', sync);
+  /* ---- CKEditor 5: <textarea data-editor="full|basic"> (see components/editor.blade.php) ---- */
+  const TOOLBARS = {
+    full: ['heading', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', 'outdent', 'indent', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo'],
+    basic: ['bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', '|', 'undo', 'redo'],
+  };
+  const editors = new Map();
+  window.initEditors = (root = document) => {
+    if (!window.ClassicEditor) return; // CDN blocked -> plain textarea still works
+    $$('textarea[data-editor]', root).forEach((ta) => {
+      if (ta.dataset.editorReady || ta.closest('template')) return;
+      ta.dataset.editorReady = 1;
+      ClassicEditor.create(ta, {
+        toolbar: TOOLBARS[ta.dataset.editor] || TOOLBARS.full,
+        heading: { options: [
+          { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+          { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+          { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+          { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+        ] },
+        table: { contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'] },
+        link: { addTargetToExternalLinks: true },
+      }).then((ed) => {
+        editors.set(ta, ed);
+        ed.model.document.on('change:data', () => { ta.value = ed.getData(); });
+      }).catch((err) => console.error('CKEditor', err));
+    });
+  };
+  window.destroyEditors = (root) => $$('textarea[data-editor]', root).forEach((ta) => { editors.get(ta)?.destroy(); editors.delete(ta); });
+  initEditors();
+  // make sure every editor writes back before the form posts
+  $$('form').forEach((f) => f.addEventListener('submit', () => editors.forEach((ed, ta) => { if (f.contains(ta)) ta.value = ed.getData(); })));
+
+  /* ---- repeater (FAQ rows): [data-repeater] > [data-repeater-list], <template data-repeater-template>, [data-repeater-add] ---- */
+  $$('[data-repeater]').forEach((rep) => {
+    const list = $('[data-repeater-list]', rep), tpl = $('template[data-repeater-template]', rep);
+    let next = Number(rep.dataset.next || list.children.length);
+    const empty = $('[data-repeater-empty]', rep);
+    const refresh = () => { if (empty) empty.hidden = list.children.length > 0; };
+    $('[data-repeater-add]', rep).addEventListener('click', () => {
+      const html = tpl.innerHTML.replaceAll('__INDEX__', next++);
+      list.insertAdjacentHTML('beforeend', html);
+      const row = list.lastElementChild;
+      initEditors(row); refresh();
+      $('input', row)?.focus();
+    });
+    list.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-repeater-remove]');
+      if (!btn) return;
+      const row = btn.closest('[data-repeater-row]');
+      destroyEditors(row); row.remove(); refresh();
+    });
+    refresh();
   });
 
   /* ---- dependent dropdown: <select data-depends-on="parentName"> with <option data-parent="id"> ---- */

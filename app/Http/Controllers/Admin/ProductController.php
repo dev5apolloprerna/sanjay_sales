@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
-use App\Support\LineList;
+use App\Support\Html;
 use App\Support\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -93,6 +93,12 @@ class ProductController extends Controller
     {
         $request->merge(['slug' => Str::slug($request->slug ?: $request->name)]);
 
+        // drop FAQ rows that were added but left completely empty
+        $request->merge(['faqs' => collect((array) $request->input('faqs', []))
+            ->filter(fn ($f) => is_array($f) && (filled(trim((string) ($f['question'] ?? ''))) || ! Html::isBlank($f['answer'] ?? null)))
+            ->map(fn ($f) => ['question' => trim((string) ($f['question'] ?? '')), 'answer' => Html::isBlank($f['answer'] ?? null) ? null : $f['answer']])
+            ->all()]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:200'],
             'slug' => ['nullable', 'max:220', Rule::unique('products')->ignore($product?->id)],
@@ -101,26 +107,38 @@ class ProductController extends Controller
             'subcategory_id' => ['nullable', Rule::exists('subcategories', 'id')->where('category_id', $request->category_id)],
             'brand' => ['nullable', 'string', 'max:100'],
             'price' => ['nullable', 'string', 'max:50'],
-            'short_description' => ['nullable', 'string', 'max:1000'],
+            // CKEditor HTML fields
+            'short_description' => ['nullable', 'string', 'max:5000'],
             'description' => ['nullable', 'string'],
-            'features' => ['nullable', 'string', 'max:5000'],
-            'applications' => ['nullable', 'string', 'max:5000'],
-            'specifications' => ['nullable', 'string', 'max:10000'],
-            'faqs' => ['nullable', 'string', 'max:10000'],
+            'features' => ['nullable', 'string', 'max:30000'],
+            'applications' => ['nullable', 'string', 'max:30000'],
+            'specifications' => ['nullable', 'string', 'max:100000'],
+            'faqs' => ['nullable', 'array', 'max:50'],
+            'faqs.*.question' => ['required', 'string', 'max:500'],
+            'faqs.*.answer' => ['required', 'string', 'max:20000'],
             'images' => ['nullable', 'array', 'max:10'],
             'images.*' => ['image', 'max:5120'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
-        ], ['category_id.required' => 'Please select a category.', 'subcategory_id.exists' => 'This subcategory does not belong to the selected category.', 'images.*.image' => 'Each file must be an image.'])
-            + ['status' => $request->boolean('status'), 'featured' => $request->boolean('featured')];
+        ], [
+            'category_id.required' => 'Please select a category.',
+            'subcategory_id.exists' => 'This subcategory does not belong to the selected category.',
+            'images.*.image' => 'Each file must be an image.',
+            'faqs.*.question.required' => 'Please enter the question.',
+            'faqs.*.answer.required' => 'Please enter the answer.',
+        ]) + ['status' => $request->boolean('status'), 'featured' => $request->boolean('featured')];
 
-        // textareas -> JSON columns used by the website's product detail page
-        return array_merge($data, [
-            'features' => LineList::list($request->features),
-            'applications' => LineList::list($request->applications),
-            'specifications' => LineList::specs($request->specifications),
-            'faqs' => LineList::faqs($request->faqs),
-        ]);
+        foreach (['short_description', 'description', 'features', 'applications', 'specifications'] as $field) {
+            $data[$field] = Html::clean($data[$field] ?? null);
+        }
+
+        $faqs = collect($data['faqs'] ?? [])
+            ->map(fn ($f) => ['question' => $f['question'], 'answer' => Html::clean($f['answer'])])
+            ->filter(fn ($f) => $f['answer'] !== null)
+            ->values()->all();
+        $data['faqs'] = $faqs ?: null;
+
+        return $data;
     }
 }

@@ -77,7 +77,10 @@ return [
         ],
     ],
 
-    // "Numbers That Define Us" – update these to the real figures.
+    // "Numbers That Define Us" – defaults only. Edit them in Admin › Website › Home Counters
+    // (saved values in the settings table take priority over these).
+    'stats_title' => 'Numbers That Define Us',
+    'stats_subtitle' => null,
     'stats' => [
         ['value' => (int) env('STAT_YEARS', 40), 'suffix' => '+', 'label' => 'Years Experience'],
         ['value' => (int) env('STAT_PRODUCTS', 500), 'suffix' => '+', 'label' => 'Products Supplied'],

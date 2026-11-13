@@ -22,31 +22,36 @@
     <x-field name="price" label="Price" :value="$item->price" placeholder="e.g. ₹12,500 — leave blank for 'On request'" />
     <x-switch name="featured" label="Featured" :checked="$item->featured" on="Show on homepage" off="Not featured" />
     <x-switch name="status" label="Status" :checked="$item->status" />
-    <x-textarea name="short_description" label="Short Description" :value="$item->short_description" rows="2" />
+    <x-editor name="short_description" label="Short Description" :value="$item->short_description" toolbar="basic"
+        hint="Shown on product cards and at the top of the product page." />
+    <x-editor name="description" label="Full Description / Specifications" :value="$item->description" />
+    <x-editor name="features" label="Key Features" :value="$item->features" toolbar="basic"
+        hint="Tip: use the bullet list button – one feature per point." />
+    <x-editor name="applications" label="Applications" :value="$item->applications" toolbar="basic"
+        hint="Tip: use the bullet list button – one application per point." />
+    <x-editor name="specifications" label="Technical Specifications" :value="$item->specifications"
+        hint="Tip: use the Table button for a Label | Value specification table. Headings can separate groups." />
 
-    <div class="field full">
-        <label>Full Description / Specifications</label>
-        <div class="rte" data-rte="description">
-            <div class="rte-bar">
-                <button type="button" data-cmd="bold" style="font-weight:800">B</button><button type="button" data-cmd="italic" style="font-style:italic">I</button>
-                <button type="button" data-cmd="underline" style="text-decoration:underline">U</button><button type="button" data-cmd="formatBlock:h2">H2</button>
-                <button type="button" data-cmd="formatBlock:h3">H3</button><button type="button" data-cmd="formatBlock:p">P</button>
-                <button type="button" data-cmd="insertUnorderedList">• List</button><button type="button" data-cmd="insertOrderedList">1. List</button>
-                <button type="button" data-cmd="createLink">Link</button><button type="button" data-cmd="removeFormat">Clear</button>
-            </div>
-            <div class="rte-area" contenteditable="true"></div>
+    {{-- FAQ: question + rich-text answer, add / remove rows --}}
+    @php
+        // keep old() keys as-is so validation errors line up with their rows
+        $faqs = old('faqs', array_values($item->faqs ?? []));
+        $faqs = is_array($faqs) ? $faqs : [];
+    @endphp
+    <div class="field full" data-repeater data-next="{{ $faqs ? max(array_keys($faqs)) + 1 : 0 }}">
+        <label>FAQs</label>
+        <div data-repeater-list>
+            @foreach($faqs as $i => $faq)
+                @include('admin.products.partials.faq-row', ['i' => $i, 'faq' => $faq])
+            @endforeach
         </div>
-        <textarea name="description" hidden>{{ old('description', $item->description) }}</textarea>
+        <div class="hint" data-repeater-empty>No FAQs yet for this product.</div>
+        <template data-repeater-template>
+            @include('admin.products.partials.faq-row', ['i' => '__INDEX__', 'faq' => []])
+        </template>
+        <div><button type="button" class="btn ghost sm" data-repeater-add><x-icon name="plus" width="14" height="14" /> Add FAQ</button></div>
+        @error('faqs')<div class="error">{{ $message }}</div>@enderror
     </div>
-
-    <x-textarea name="features" label="Key Features" :value="\App\Support\LineList::listText($item->features)" rows="5"
-        hint="One feature per line." placeholder="High speed &amp; precision cutting&#10;Heavy-duty welded structure" />
-    <x-textarea name="applications" label="Applications" :value="\App\Support\LineList::listText($item->applications)" rows="5"
-        hint="One application per line." placeholder="Metal fabrication&#10;Sheet metal industry" />
-    <x-textarea name="specifications" label="Technical Specifications" :value="\App\Support\LineList::specsText($item->specifications)" rows="7"
-        hint="One per line:  Group | Label | Value   (e.g.  General | Machine Type | CNC Plasma Cutter ). Without a group it goes under “General”." />
-    <x-textarea name="faqs" label="FAQ" :value="\App\Support\LineList::faqsText($item->faqs)" rows="6"
-        hint="One per line:  Question | Answer" />
 
     <div class="field full" data-multi-preview>
         <label>Product Images</label>

@@ -16,10 +16,8 @@ class Product extends Model
     protected $casts = [
         'status' => 'boolean',
         'featured' => 'boolean',
-        'features' => 'array',
-        'applications' => 'array',
-        'specifications' => 'array',
-        'faqs' => 'array',
+        // features, applications, specifications = HTML from CKEditor
+        'faqs' => 'array', // [{"question": "...", "answer": "<p>HTML</p>"}]
     ];
 
     public function category()
