@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
+use App\Support\EditorInput;
 use App\Support\Html;
 use App\Support\Upload;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $items = Product::with(['category', 'subcategory', 'images'])
+        $items = Product::with(['category', 'subcategory', 'images'])->withCount(['faqs', 'specRows'])
             ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w->where('name', 'like', "%{$s}%")->orWhere('brand', 'like', "%{$s}%")))
             ->when($request->category, fn ($q, $c) => $q->where('category_id', $c))
             ->when($request->subcategory, fn ($q, $c) => $q->where('subcategory_id', $c))
@@ -91,13 +92,9 @@ class ProductController extends Controller
 
     private function validated(Request $request, ?Product $product = null): array
     {
-        $request->merge(['slug' => Str::slug($request->slug ?: $request->name)]);
+        EditorInput::decode($request); // CKEditor HTML arrives base64-encoded (ModSecurity)
 
-        // drop FAQ rows that were added but left completely empty
-        $request->merge(['faqs' => collect((array) $request->input('faqs', []))
-            ->filter(fn ($f) => is_array($f) && (filled(trim((string) ($f['question'] ?? ''))) || ! Html::isBlank($f['answer'] ?? null)))
-            ->map(fn ($f) => ['question' => trim((string) ($f['question'] ?? '')), 'answer' => Html::isBlank($f['answer'] ?? null) ? null : $f['answer']])
-            ->all()]);
+        $request->merge(['slug' => Str::slug($request->slug ?: $request->name)]);
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:200'],
@@ -112,10 +109,6 @@ class ProductController extends Controller
             'description' => ['nullable', 'string'],
             'features' => ['nullable', 'string', 'max:30000'],
             'applications' => ['nullable', 'string', 'max:30000'],
-            'specifications' => ['nullable', 'string', 'max:100000'],
-            'faqs' => ['nullable', 'array', 'max:50'],
-            'faqs.*.question' => ['required', 'string', 'max:500'],
-            'faqs.*.answer' => ['required', 'string', 'max:20000'],
             'images' => ['nullable', 'array', 'max:10'],
             'images.*' => ['image', 'max:5120'],
             'meta_title' => ['nullable', 'string', 'max:255'],
@@ -125,19 +118,11 @@ class ProductController extends Controller
             'category_id.required' => 'Please select a category.',
             'subcategory_id.exists' => 'This subcategory does not belong to the selected category.',
             'images.*.image' => 'Each file must be an image.',
-            'faqs.*.question.required' => 'Please enter the question.',
-            'faqs.*.answer.required' => 'Please enter the answer.',
         ]) + ['status' => $request->boolean('status'), 'featured' => $request->boolean('featured')];
 
-        foreach (['short_description', 'description', 'features', 'applications', 'specifications'] as $field) {
+        foreach (['short_description', 'description', 'features', 'applications'] as $field) {
             $data[$field] = Html::clean($data[$field] ?? null);
         }
-
-        $faqs = collect($data['faqs'] ?? [])
-            ->map(fn ($f) => ['question' => $f['question'], 'answer' => Html::clean($f['answer'])])
-            ->filter(fn ($f) => $f['answer'] !== null)
-            ->values()->all();
-        $data['faqs'] = $faqs ?: null;
 
         return $data;
     }

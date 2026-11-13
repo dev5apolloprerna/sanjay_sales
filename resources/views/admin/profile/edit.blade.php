@@ -2,7 +2,7 @@
 @section('title', 'My Profile')
 @section('content')
 <div class="page-head"><h1>My Profile</h1></div>
-<form class="card" style="max-width:720px" method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" novalidate>
+<form class="card form-card" method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" novalidate>
     @csrf @method('PUT')
     <div class="grid2">
         <x-upload name="avatar" label="Profile Photo" :current="$admin->avatar_url" hint="JPG / PNG, max 2MB" />

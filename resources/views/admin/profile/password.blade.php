@@ -2,7 +2,7 @@
 @section('title', 'Change Password')
 @section('content')
 <div class="page-head"><h1>Change Password</h1></div>
-<form class="card" style="max-width:480px" method="POST" action="{{ route('admin.password.update') }}" novalidate>
+<form class="card form-card" method="POST" action="{{ route('admin.password.update') }}" novalidate>
     @csrf @method('PUT')
     <x-field name="current_password" type="password" label="Current Password" required class="pw-f" />
     <x-field name="password" type="password" label="New Password" required hint="Minimum 6 characters" class="pw-f" />

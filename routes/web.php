@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\HomeStatController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductFaqController;
+use App\Http\Controllers\Admin\ProductSpecController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\SubcategoryController;
@@ -38,6 +40,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('subcategories', SubcategoryController::class)->except('show');
         Route::resource('products', ProductController::class)->except('show');
+        Route::resource('products.faqs', ProductFaqController::class)->except('show')->scoped();  // product FAQs
+        Route::get('products/{product}/specifications', [ProductSpecController::class, 'edit'])->name('products.specifications.edit');
+        Route::put('products/{product}/specifications', [ProductSpecController::class, 'update'])->name('products.specifications.update');
         Route::resource('gallery', GalleryController::class)->except('show')->parameters(['gallery' => 'gallery']);
         Route::resource('clients', ClientController::class)->except('show');
         Route::resource('videos', VideoController::class)->except('show');

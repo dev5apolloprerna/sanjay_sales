@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
+use App\Support\EditorInput;
 use App\Support\Html;
 use App\Support\Upload;
 use Illuminate\Http\Request;
@@ -60,6 +61,8 @@ class BlogController extends Controller
 
     private function validated(Request $request, ?Blog $blog = null): array
     {
+        EditorInput::decode($request); // CKEditor HTML arrives base64-encoded (ModSecurity)
+
         $request->merge(['slug' => Str::slug($request->slug ?: $request->title)]);
         // CKEditor HTML: strip anything unsafe, treat "<p>&nbsp;</p>" as empty
         $request->merge(['content' => Html::clean($request->content)]);

@@ -52,7 +52,7 @@ class ProductController extends ApiController
         $slug = $request->validate(['slug' => ['required', 'string', 'max:220']])['slug'];
 
         $product = Product::active()->where('slug', $slug)
-            ->with(['category:id,name,slug', 'subcategory:id,name,slug', 'images'])
+            ->with(['category:id,name,slug', 'subcategory:id,name,slug', 'images', 'specRows', 'faqs' => fn ($q) => $q->active()])
             ->firstOrFail();
 
         $related = Product::active()->whereKeyNot($product->id)
