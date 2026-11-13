@@ -10,7 +10,6 @@
     @error($key)<div class="error">{{ $message }}</div>@enderror
 </div>
 @once
-    @push('scripts')
-        <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-    @endpush
+    {{-- CKEditor + FAQ repeater script/styles, printed inline once per page --}}
+    @include('components.editor-assets')
 @endonce

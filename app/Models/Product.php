@@ -10,14 +10,13 @@ class Product extends Model
     use HasImageUrl;
 
     protected $fillable = ['category_id', 'subcategory_id', 'name', 'slug', 'brand', 'price', 'short_description', 'description',
-        'features', 'applications', 'specifications', 'faqs', 'featured', 'status',
+        'features', 'applications', 'featured', 'status',
         'meta_title', 'meta_description', 'meta_keywords'];
 
     protected $casts = [
         'status' => 'boolean',
         'featured' => 'boolean',
-        // features, applications, specifications = HTML from CKEditor
-        'faqs' => 'array', // [{"question": "...", "answer": "<p>HTML</p>"}]
+        // features, applications = HTML from CKEditor
     ];
 
     public function category()
@@ -28,6 +27,21 @@ class Product extends Model
     public function subcategory()
     {
         return $this->belongsTo(Subcategory::class);
+    }
+
+    /**
+     * Technical specification rows (managed from Products › Specifications action).
+     * Named specRows because the old "specifications" text column still exists in the table.
+     */
+    public function specRows()
+    {
+        return $this->hasMany(ProductSpecification::class)->orderBy('group_order')->orderBy('sort_order')->orderBy('id');
+    }
+
+    /** FAQs (managed from Products › FAQ action) */
+    public function faqs()
+    {
+        return $this->hasMany(ProductFaq::class)->orderBy('sort_order')->orderBy('id');
     }
 
     public function images()

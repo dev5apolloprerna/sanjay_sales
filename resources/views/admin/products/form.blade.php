@@ -29,29 +29,17 @@
         hint="Tip: use the bullet list button – one feature per point." />
     <x-editor name="applications" label="Applications" :value="$item->applications" toolbar="basic"
         hint="Tip: use the bullet list button – one application per point." />
-    <x-editor name="specifications" label="Technical Specifications" :value="$item->specifications"
-        hint="Tip: use the Table button for a Label | Value specification table. Headings can separate groups." />
-
-    {{-- FAQ: question + rich-text answer, add / remove rows --}}
-    @php
-        // keep old() keys as-is so validation errors line up with their rows
-        $faqs = old('faqs', array_values($item->faqs ?? []));
-        $faqs = is_array($faqs) ? $faqs : [];
-    @endphp
-    <div class="field full" data-repeater data-next="{{ $faqs ? max(array_keys($faqs)) + 1 : 0 }}">
-        <label>FAQs</label>
-        <div data-repeater-list>
-            @foreach($faqs as $i => $faq)
-                @include('admin.products.partials.faq-row', ['i' => $i, 'faq' => $faq])
-            @endforeach
+    @if($item->exists)
+        <div class="field full">
+            <label>Technical Specifications &amp; FAQs</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <a class="btn ghost sm" href="{{ route('admin.products.specifications.edit', $item) }}"><x-icon name="specs" width="14" height="14" /> Manage Specifications ({{ $item->specRows()->count() }})</a>
+                <a class="btn ghost sm" href="{{ route('admin.products.faqs.index', $item) }}"><x-icon name="faq" width="14" height="14" /> Manage FAQs ({{ $item->faqs()->count() }})</a>
+            </div>
         </div>
-        <div class="hint" data-repeater-empty>No FAQs yet for this product.</div>
-        <template data-repeater-template>
-            @include('admin.products.partials.faq-row', ['i' => '__INDEX__', 'faq' => []])
-        </template>
-        <div><button type="button" class="btn ghost sm" data-repeater-add><x-icon name="plus" width="14" height="14" /> Add FAQ</button></div>
-        @error('faqs')<div class="error">{{ $message }}</div>@enderror
-    </div>
+    @else
+        <div class="field full"><div class="hint">After saving, use the <b>Specifications</b> and <b>FAQ</b> buttons in the product list to add technical specifications and FAQs for this product.</div></div>
+    @endif
 
     <div class="field full" data-multi-preview>
         <label>Product Images</label>
