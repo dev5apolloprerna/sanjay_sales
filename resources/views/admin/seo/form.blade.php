@@ -18,7 +18,7 @@
     <a class="btn ghost" href="{{ route('admin.seo.index') }}">← Back to List</a>
 </div>
 
-<form class="card form-card" method="POST" action="{{ route('admin.seo.update', $item) }}" novalidate>
+<form id="seoForm"  class="card form-card" method="POST" action="{{ route('admin.seo.update', $item) }}" novalidate>
     @csrf
     @method('PUT')
     @if($errors->any())
@@ -50,6 +50,75 @@
         <a class="btn ghost" href="{{ route('admin.seo.index') }}">Cancel</a>
     </div>
 </form>
+
+<script>
+(function () {
+    var form = document.getElementById('seoForm');
+    if (!form) { console.error('hex: #seoForm not found'); return; }
+
+    var fields = [
+        'page_name',
+        'meta_title',
+        'meta_keywords',
+        'meta_description',
+        'head',
+        'body'
+    ];
+
+    function toHex(str) {
+        return 'hx' + Array.from(new TextEncoder().encode(str))
+            .map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    }
+
+    // Read from a rich-text editor if the field has one
+    function getValue(el) {
+        // CKEditor 5
+        var wrap = el.nextElementSibling;
+        var editable = wrap && wrap.querySelector ? wrap.querySelector('.ck-editor__editable') : null;
+        if (editable && editable.ckeditorInstance) return editable.ckeditorInstance.getData();
+        // CKEditor 4
+        if (window.CKEDITOR) {
+            for (var key in CKEDITOR.instances) {
+                var inst = CKEDITOR.instances[key];
+                if (inst.element && inst.element.$ === el) return inst.getData();
+            }
+        }
+        return el.value || '';
+    }
+
+    form.addEventListener('submit', function (e) {
+        if (e.defaultPrevented) return;
+
+        try {
+            fields.forEach(function (name) {
+                var el = form.querySelector('[data-hex-field="' + name + '"]')
+                      || form.querySelector('[name="' + name + '"]');
+                if (!el) return;
+
+                var oldHidden = form.querySelector('input[data-hex-hidden="' + name + '"]');
+                if (oldHidden) oldHidden.remove();
+
+                var value = String(getValue(el));
+
+                el.dataset.hexField = name;
+                el.removeAttribute('name');
+
+                var hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = name;
+                hidden.dataset.hexHidden = name;
+                hidden.value = value === '' ? '' : toHex(value);
+                form.appendChild(hidden);
+            });
+        } catch (err) {
+            // never send raw HTML if encoding fails
+            e.preventDefault();
+            console.error('hex encode failed:', err);
+            alert('Could not prepare the form. Please check the browser console.');
+        }
+    });
+})();
+</script>
 
 {{-- CKEditor 5 (open-source build) with Undo/Redo, Bold, Italic, Underline, Link and Source --}}
 <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css">
