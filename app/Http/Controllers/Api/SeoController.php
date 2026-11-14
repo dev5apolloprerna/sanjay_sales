@@ -23,7 +23,8 @@ use Illuminate\Support\Str;
  *   page, page_name, site_name, meta_title, meta_keywords, meta_description, head, body
  *
  * Fixed pages come from Admin > SEO Setup. Detail pages use the SEO fields saved on the
- * record and fall back to auto-generated values when they are empty (head/body are null).
+ * record and fall back to auto-generated values when they are empty. head/body come from the
+ * record for category, subcategory, product and blog (null when empty).
  * "products" (product listing) and "clients" no longer have SEO.
  */
 class SeoController extends ApiController
@@ -79,6 +80,8 @@ class SeoController extends ApiController
             'meta_title' => $c->meta_title ?: $c->name.' | '.$this->site(),
             'meta_keywords' => $c->meta_keywords,
             'meta_description' => $this->plain($c->meta_description, 500) ?: $this->plain($c->description),
+            'head' => $c->head,
+            'body' => $c->body,
         ]);
     }
 
@@ -94,6 +97,8 @@ class SeoController extends ApiController
             'meta_title' => $s->meta_title ?: $s->name.' | '.$s->category->name.' | '.$this->site(),
             'meta_keywords' => $s->meta_keywords,
             'meta_description' => $this->plain($s->meta_description, 500) ?: $this->plain($s->description),
+            'head' => $s->head,
+            'body' => $s->body,
         ]);
     }
 
@@ -107,6 +112,8 @@ class SeoController extends ApiController
             'meta_keywords' => $p->meta_keywords ?: $p->brand,
             'meta_description' => $this->plain($p->meta_description, 500)
                 ?: ($this->plain($p->short_description) ?: $this->plain($p->description)),
+            'head' => $p->head,
+            'body' => $p->body,
         ]);
     }
 
@@ -120,6 +127,8 @@ class SeoController extends ApiController
             'meta_keywords' => $b->meta_keywords,
             'meta_description' => $this->plain($b->meta_description, 500)
                 ?: ($this->plain($b->excerpt) ?: $this->plain($b->content)),
+            'head' => $b->head,
+            'body' => $b->body,
         ]);
     }
 

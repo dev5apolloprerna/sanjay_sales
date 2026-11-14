@@ -10,7 +10,7 @@ class Blog extends Model
     use HasImageUrl;
 
     protected $fillable = ['title', 'slug', 'excerpt', 'content', 'image', 'author', 'meta_title', 'meta_description',
-        'meta_keywords', 'status', 'published_at'];
+        'meta_keywords', 'head', 'body', 'status', 'published_at'];
 
     protected $casts = ['status' => 'boolean', 'published_at' => 'date'];
 

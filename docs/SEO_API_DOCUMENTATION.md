@@ -46,7 +46,9 @@ Fields match **Admin › SEO Setup › Edit Page SEO**: Page Name, Meta Title, M
 - `head` – raw HTML (canonical, OG tags, Google Analytics ...) to inject inside `<head>`.
 - `body` – raw HTML (e.g. GTM noscript) to inject at the start of `<body>`.
 - Detail pages (`category`, `subcategory`, `product`, `blog`) use the SEO fields saved on the record; empty
-  fields are generated automatically. `head` / `body` are always `null` for them.
+  meta fields are generated automatically.
+- `head` / `body` for `category`, `subcategory`, `product` and `blog` come from the Head / Body fields in the
+  admin Add/Edit form of that record (`null` when empty).
 - `products` (product listing) and `clients` no longer have SEO and now return **422**.
 
 ## Errors

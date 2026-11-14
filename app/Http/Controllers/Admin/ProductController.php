@@ -114,6 +114,8 @@ class ProductController extends Controller
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'head' => ['nullable', 'string', 'max:65000'],
+            'body' => ['nullable', 'string', 'max:65000'],
         ], [
             'category_id.required' => 'Please select a category.',
             'subcategory_id.exists' => 'This subcategory does not belong to the selected category.',

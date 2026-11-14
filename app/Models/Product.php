@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $fillable = ['category_id', 'subcategory_id', 'name', 'slug', 'brand', 'price', 'short_description', 'description',
         'features', 'applications', 'featured', 'status',
-        'meta_title', 'meta_description', 'meta_keywords'];
+        'meta_title', 'meta_description', 'meta_keywords', 'head', 'body'];
 
     protected $casts = [
         'status' => 'boolean',

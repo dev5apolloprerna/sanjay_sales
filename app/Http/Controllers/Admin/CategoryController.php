@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Support\EditorInput;
 use App\Support\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -65,6 +66,8 @@ class CategoryController extends Controller
 
     private function validated(Request $request, ?Category $category = null): array
     {
+        EditorInput::decode($request); // Head/Body scripts arrive base64-encoded (ModSecurity)
+
         $request->merge(['slug' => Str::slug($request->slug ?: $request->name)]);
 
         return $request->validate([
@@ -76,6 +79,8 @@ class CategoryController extends Controller
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'head' => ['nullable', 'string', 'max:65000'],
+            'body' => ['nullable', 'string', 'max:65000'],
         ]) + ['status' => $request->boolean('status'), 'sort_order' => (int) $request->sort_order];
     }
 }
