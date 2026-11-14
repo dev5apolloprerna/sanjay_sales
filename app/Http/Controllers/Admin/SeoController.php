@@ -29,6 +29,8 @@ class SeoController extends Controller
     public function update(Request $request, SeoPage $seo)
     {
         abort_unless(array_key_exists($seo->page_key, SeoPage::PAGES), 404);
+        
+        $this->decodeHexInput($request);
 
         $data = $request->validate([
             'page_name' => ['required', 'string', 'max:255'],
@@ -42,5 +44,57 @@ class SeoController extends Controller
         $seo->update($data);
 
         return redirect()->route('admin.seo.index')->with('success', 'SEO updated successfully.');
+    }
+    
+    private function decodeHexInput(Request $request): void
+    {
+        $fields = [
+            'page_name',
+            'meta_title',
+            'meta_keywords',
+            'meta_description',
+            'head',
+            'body',
+        ];
+    
+        $decoded = [];
+    
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $decoded[$field] = $this->decodeHex($request->input($field));
+            }
+        }
+    
+        $request->merge($decoded);
+    }
+
+    private function decodeHex($value)
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+    
+        // editor may wrap plain text in <p>...</p>
+        $plain = trim(strip_tags($value));
+        if (str_starts_with($plain, 'hx') && ctype_xdigit(substr($plain, 2))) {
+            $value = $plain;
+        }
+    
+        while (str_starts_with($value, 'hx')) {
+            $hex = substr($value, 2);
+    
+            if ($hex === '' || strlen($hex) % 2 !== 0 || !ctype_xdigit($hex)) {
+                break;
+            }
+    
+            $decoded = hex2bin($hex);
+            if ($decoded === false) {
+                break;
+            }
+    
+            $value = $decoded;
+        }
+    
+        return $value;
     }
 }
