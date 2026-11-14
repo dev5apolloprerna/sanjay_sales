@@ -27,7 +27,6 @@ class CatalogueController extends Controller
     {
         $data = $this->validated($request, true);
         $data['file'] = Upload::store($request->file('file'), 'catalogues');
-        $data['image'] = Upload::store($request->file('image'), 'catalogues');
         Catalogue::create($data);
 
         return redirect()->route('admin.catalogues.index')->with('success', 'Catalogue added successfully.');
@@ -42,7 +41,6 @@ class CatalogueController extends Controller
     {
         $data = $this->validated($request, false);
         $data['file'] = Upload::replace($request->file('file'), $catalogue->file, 'catalogues');
-        $data['image'] = Upload::replace($request->file('image'), $catalogue->image, 'catalogues', $request->boolean('remove_image'));
         $catalogue->update($data);
 
         return redirect()->route('admin.catalogues.index')->with('success', 'Catalogue updated successfully.');
@@ -51,7 +49,7 @@ class CatalogueController extends Controller
     public function destroy(Catalogue $catalogue)
     {
         Upload::delete($catalogue->file);
-        Upload::delete($catalogue->image);
+        Upload::delete($catalogue->image); // old cover images (no longer used)
         $catalogue->delete();
 
         return back()->with('success', 'Catalogue deleted.');
@@ -62,9 +60,9 @@ class CatalogueController extends Controller
         $request->validate([
             'title' => ['required', 'string', 'max:200'],
             'sort_order' => ['nullable', 'integer'],
-            'file' => [$fileRequired ? 'required' : 'nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,zip', 'max:30720'],
-            'image' => ['nullable', 'image', 'max:5120'],
-        ], ['file.required' => 'Please choose the catalogue file.', 'file.mimes' => 'Allowed files: PDF, Word, Excel or ZIP.', 'file.max' => 'The file must be 30MB or smaller.']);
+            'file' => [$fileRequired ? 'required' : 'nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,zip', 'max:10240'], // 10MB
+        ], ['file.required' => 'Please choose the catalogue file.', 'file.mimes' => 'Allowed files: PDF, Word, Excel or ZIP.', 'file.max' => 'The file must be 10MB or smaller.',
+            'file.uploaded' => 'The file could not be uploaded. It must be 10MB or smaller.']);
 
         return ['title' => $request->title, 'sort_order' => (int) $request->sort_order, 'status' => $request->boolean('status')];
     }

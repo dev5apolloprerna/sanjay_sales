@@ -11,6 +11,6 @@
     <x-switch name="status" label="Status" :checked="$item->status" />
     <x-textarea name="description" label="Description" :value="$item->description" />
     <x-upload name="image" label="Subcategory Image" :current="$item->image_url" hint="JPG, PNG, WEBP — max 5MB" />
-    <x-seo-fields :item="$item" />
+    <x-seo-fields :item="$item" scripts />
 </x-form-page>
 @endsection

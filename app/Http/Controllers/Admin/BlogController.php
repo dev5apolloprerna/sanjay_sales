@@ -77,6 +77,8 @@ class BlogController extends Controller
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'head' => ['nullable', 'string', 'max:65000'],
+            'body' => ['nullable', 'string', 'max:65000'],
             'image' => ['nullable', 'image', 'max:5120'],
         ]) + ['status' => $request->boolean('status')];
     }

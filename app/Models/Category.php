@@ -10,7 +10,7 @@ class Category extends Model
     use HasImageUrl;
 
     protected $fillable = ['name', 'slug', 'description', 'image', 'sort_order', 'status',
-        'meta_title', 'meta_description', 'meta_keywords'];
+        'meta_title', 'meta_description', 'meta_keywords', 'head', 'body'];
 
     protected $casts = ['status' => 'boolean', 'sort_order' => 'integer'];
 

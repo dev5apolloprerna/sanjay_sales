@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Subcategory;
+use App\Support\EditorInput;
 use App\Support\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -73,6 +74,8 @@ class SubcategoryController extends Controller
 
     private function validated(Request $request, ?Subcategory $item = null): array
     {
+        EditorInput::decode($request); // Head/Body scripts arrive base64-encoded (ModSecurity)
+
         $request->merge(['slug' => Str::slug($request->slug ?: $request->name)]);
 
         return $request->validate([
@@ -86,6 +89,8 @@ class SubcategoryController extends Controller
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'head' => ['nullable', 'string', 'max:65000'],
+            'body' => ['nullable', 'string', 'max:65000'],
         ], [
             'category_id.required' => 'Please select a category.',
             'slug.unique' => 'This category already has a subcategory with this name/slug.',

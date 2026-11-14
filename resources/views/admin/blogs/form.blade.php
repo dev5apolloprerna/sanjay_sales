@@ -14,6 +14,6 @@
 
     <x-editor name="content" label="Content" :value="$item->content" required />
 
-    <x-seo-fields :item="$item" />
+    <x-seo-fields :item="$item" scripts />
 </x-form-page>
 @endsection

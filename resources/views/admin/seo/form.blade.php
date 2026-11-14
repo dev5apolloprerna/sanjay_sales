@@ -120,18 +120,16 @@
 })();
 </script>
 
-{{-- CKEditor 5 (open-source build) with Undo/Redo, Bold, Italic, Underline, Link and Source --}}
-<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css">
-<script src="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.umd.js"></script>
+{{-- CKEditor 5 classic build (same version as the product editors).
+     Do NOT switch to ckeditor5 v44+ from cdn.ckeditor.com with licenseKey "GPL": that combination is
+     not allowed and the editor silently becomes READ-ONLY (error: license-key-invalid-distribution-channel). --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <script>
 (function () {
-  if (!window.CKEDITOR) { console.warn('CKEditor could not be loaded from cdn.ckeditor.com'); return; }
-  var C = window.CKEDITOR;
+  if (!window.ClassicEditor) { console.warn('CKEditor could not be loaded from cdn.ckeditor.com'); return; }
   var ta = document.getElementById('f_meta_description');
-  C.ClassicEditor.create(ta, {
-    licenseKey: 'GPL',
-    plugins: [C.Essentials, C.Paragraph, C.Bold, C.Italic, C.Underline, C.Link, C.SourceEditing],
-    toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'underline', '|', 'link', 'sourceEditing'],
+  ClassicEditor.create(ta, {
+    toolbar: ['undo', 'redo', '|', 'bold', 'italic', '|', 'link'],
     link: { addTargetToExternalLinks: true }
   }).then(function (ed) {
     ed.model.document.on('change:data', function () { ta.value = ed.getData(); });
